@@ -1,4 +1,6 @@
 'use client'
+
+import { updateTopic } from '@/actions/topicActions'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
@@ -16,19 +18,11 @@ export default function EditTopicForm({
   const [newTitle, setNewTitle] = useState(title)
   const [newDescription, setNewDescription] = useState(description)
   const router = useRouter()
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const res = await fetch(`/api/topics/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ newTitle, newDescription }),
-      })
-      if (!res.ok) {
-        throw new Error('Failed to update topic')
-      }
+      await updateTopic(id, newTitle, newDescription)
       router.push('/')
       router.refresh()
     } catch (error) {
@@ -37,31 +31,30 @@ export default function EditTopicForm({
   }
 
   return (
-    <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
-      {' '}
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
       <input
-        className="border border-slate-500 p-4"
         type="text"
+        className="border border-slate-500 p-4"
         placeholder="Topic Title"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setNewTitle(e.target.value)
-        }
         value={newTitle}
-      />{' '}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setNewTitle(e.target.value)
+        }}
+      />
       <textarea
         className="border border-slate-500 p-4 h-32"
         placeholder="Topic Description"
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-          setNewDescription(e.target.value)
-        }
         value={newDescription}
-      />{' '}
+        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          setNewDescription(e.target.value)
+        }}
+      />
       <button
-        className="bg-green-800 text-white font-bold px-6 py-3 w-fit rounded-md"
+        className="bg-blue-800 text-white font-bold px-6 py-3 w-fit rounded-md"
         type="submit"
       >
-        Update Topic{' '}
-      </button>{' '}
+        Update Topic
+      </button>
     </form>
   )
 }
